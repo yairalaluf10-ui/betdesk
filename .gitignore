@@ -1,0 +1,14 @@
+# Supabase CLI local state (project link, cached versions)
+supabase/.temp/
+supabase/.branches/
+
+# secrets
+.env
+.env.*
+*.pem
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

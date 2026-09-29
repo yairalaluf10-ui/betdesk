@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BetDesk — לוח לקוחות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="authView" class="auth" hidden>
+    <form id="loginForm" class="auth-card">
+      <div class="logo">Bet<span>Desk</span></div>
+      <h2>כניסה למערכת</h2>
+      <label>אימייל<input id="loginEmail" type="email" autocomplete="username" required></label>
+      <label>סיסמה<input id="loginPassword" type="password" autocomplete="current-password" required></label>
+      <div class="auth-error" id="loginError"></div>
+      <button type="submit" class="btn">התחברות</button>
+    </form>
+
+    <form id="changeForm" class="auth-card" hidden>
+      <div class="logo">Bet<span>Desk</span></div>
+      <h2>הגדרת סיסמה חדשה</h2>
+      <p class="muted">זו הכניסה הראשונה שלך עם סיסמה זמנית. יש לבחור סיסמה חדשה כדי להמשיך.</p>
+      <label>סיסמה חדשה<input id="newPassword" type="password" autocomplete="new-password" minlength="10" required></label>
+      <label>אימות סיסמה<input id="newPassword2" type="password" autocomplete="new-password" minlength="10" required></label>
+      <div class="auth-error" id="changeError"></div>
+      <button type="submit" class="btn">שמירת סיסמה</button>
+    </form>
+  </div>
+
+  <div id="appView" hidden>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">Bet<span>Desk</span></div>
+      <nav class="main-nav" id="mainNav">
+        <a class="active" href="#" data-view="dash">לקוחות</a>
+        <a href="#" data-view="admin" id="adminLink" hidden>ניהול ⚙</a>
+      </nav>
+      <div class="search">
+        <input id="search" type="search" placeholder="חיפוש לקוח לפי שם או אימייל…">
+      </div>
+      <div class="user">
+        <span id="userEmail"></span>
+        <button id="logoutBtn" class="btn-ghost">יציאה</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="dashView">
+  <div class="subbar">
+    <div class="subbar-inner" id="betTypeTabs">
+      <button class="tab active" data-bet="">כל סוגי ההימור</button>
+    </div>
+  </div>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <h3>ליגות מועדפות</h3>
+      <ul id="leagueList">
+        <li class="active" data-league=""><span>כל הליגות</span><b id="countAll">0</b></li>
+      </ul>
+    </aside>
+
+    <section class="content">
+      <div class="stats" id="stats"></div>
+
+      <div class="market">
+        <div class="market-head">
+          <div class="col-name">לקוח</div>
+          <div class="col-odds" id="monthHeads"></div>
+        </div>
+        <div id="rows" class="rows">
+          <div class="state">טוען נתונים מ-Supabase…</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="slip">
+      <div class="slip-head">כרטיס לקוח</div>
+      <div id="slipBody" class="slip-body">
+        <p class="muted">בחרו לקוח מהרשימה כדי לראות את הפרטים שלו.</p>
+      </div>
+    </aside>
+  </main>
+  </div>
+
+  <section id="adminView" class="admin" hidden>
+    <div class="admin-title">
+      <h2>פאנל ניהול</h2>
+      <span class="badge">admin</span>
+    </div>
+
+    <div class="stats" id="adminStats"></div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>ניהול לקוחות</h3>
+        <div class="panel-tools">
+          <input id="adminSearch" type="search" placeholder="חיפוש…">
+          <button id="addCustomerBtn" class="btn">+ לקוח חדש</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>#</th><th>שם</th><th>אימייל</th><th>ליגה</th><th>הימור מועדף</th><th>מחזור כולל</th><th>אמצעי זיהוי</th><th></th></tr>
+          </thead>
+          <tbody id="adminCustomers"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>משתמשי מערכת</h3>
+        <span class="muted small">שינוי תפקיד נכנס לתוקף בכניסה הבאה של המשתמש (או תוך שעה לכל היותר)</span>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>אימייל</th><th>תפקיד</th><th>נוצר</th><th>כניסה אחרונה</th></tr></thead>
+          <tbody id="adminUsers"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <dialog id="customerDialog" class="dialog">
+    <form id="customerForm" method="dialog">
+      <h3 id="customerDialogTitle">לקוח חדש</h3>
+      <label>שם<input id="fName" required></label>
+      <label>אימייל<input id="fEmail" type="email" required></label>
+      <label>ליגה מועדפת<input id="fLeague" list="leagueOptions" required></label>
+      <datalist id="leagueOptions"></datalist>
+      <label>הימור מועדף<select id="fBet" required></select></label>
+      <fieldset>
+        <legend>מחזור חודשי (₪)</legend>
+        <div id="fVolumes" class="volume-fields"></div>
+      </fieldset>
+      <div class="auth-error" id="customerError"></div>
+      <div class="dialog-actions">
+        <button type="button" class="btn-ghost dark" id="cancelCustomer">ביטול</button>
+        <button type="submit" class="btn">שמירה</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="docsDialog" class="dialog">
+    <form id="docsForm" method="dialog">
+      <h3 id="docsDialogTitle">אמצעי זיהוי</h3>
+      <ul id="docsList" class="docs-list"></ul>
+      <fieldset>
+        <legend>העלאת מסמך חדש</legend>
+        <div class="upload-fields">
+          <label>סוג מסמך
+            <select id="docType" required>
+              <option value="id_card">תעודת זהות</option>
+              <option value="passport">דרכון</option>
+            </select>
+          </label>
+          <label>קובץ (JPG, PNG, WEBP או PDF, עד 5MB)
+            <input id="docFile" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required>
+          </label>
+        </div>
+      </fieldset>
+      <div class="auth-error" id="docsError"></div>
+      <div class="dialog-actions">
+        <button type="button" class="btn-ghost dark" id="closeDocs">סגירה</button>
+        <button type="submit" class="btn" id="uploadDocBtn">העלאה</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
